@@ -99,10 +99,11 @@ Example details:
 
 ## To Do / Wish List / On the Back Burner
 * ~~Video support~~ ✅ **COMPLETED** [(Thanks @finkj !)](https://github.com/uphillcheddar/MMM-S3Photos/pull/2) - Now supports Videos with hardware-accelerated playback. Tested on Raspberry Pi 5
+* Date based sorting to use exif data when availble (instead of file modification date)
 
 # Installation instructions
  * ssh into raspberry pi
- * go to Magic Mirror modules folder
+ * go to MagicMirror² modules folder
    ```bash
    cd ~/MagicMirror/modules
    ```
