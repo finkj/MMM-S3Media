@@ -98,7 +98,7 @@ Example details:
 
 
 ## To Do / Wish List / On the Back Burner
-* ~~Video support~~ ✅ **COMPLETED** - Now supports Videos with hardware-accelerated playback. Tested on Raspberry Pi 5
+* ~~Video support~~ ✅ **COMPLETED** [(Thanks @finkj !)](https://github.com/uphillcheddar/MMM-S3Photos/pull/2) - Now supports Videos with hardware-accelerated playback. Tested on Raspberry Pi 5
 
 # Installation instructions
  * ssh into raspberry pi
