@@ -98,11 +98,12 @@ Example details:
 
 
 ## To Do / Wish List / On the Back Burner
-* ~~Video support~~ ✅ **COMPLETED** - Now supports Videos with hardware-accelerated playback. Tested on Raspberry Pi 5
+* ~~Video support~~ ✅ **COMPLETED** [(Thanks @finkj !)](https://github.com/uphillcheddar/MMM-S3Photos/pull/2) - Now supports Videos with hardware-accelerated playback. Tested on Raspberry Pi 5
+* Date based sorting to use exif data when availble (instead of file modification date)
 
 # Installation instructions
  * ssh into raspberry pi
- * go to Magic Mirror modules folder
+ * go to MagicMirror² modules folder
    ```bash
    cd ~/MagicMirror/modules
    ```
@@ -130,6 +131,23 @@ Example details:
 
 
 ## Troubleshooting
+
+### Node.js Runtime Update (Important for updating users)
+
+This module was originally written when Node.js 20.x was supported. As of version 1.10, it now uses Node.js 24.x.
+
+**Existing Users:**
+If you followed the recommendation and locked down the user that this module uses, then the AWS credentials will not allow re-deployment of the CDK. You will need to manually update the Lambda runtime:
+1. Go to the [AWS Console](https://console.aws.amazon.com/lambda/).
+2. Find your Lambda function (usually named something like `S3PhotosStack-S3PhotosHandler...`).
+3. In the "Runtime settings" section, click "Edit".
+4. Change the Runtime to **Node.js 24.x** (or any other currently supported version).
+5. Click "Save".
+
+Alternatively, if you would rather have the CDK deploy it for you: you can find your MagicMirror user in the AWS Console, give it admin rights (like you did during setup), and then use the CDK CLI to redeploy. It will handle everything for you, but I HIGHLY recommend lowering/removing the permissions back down to only the S3 bucket and Lambda invocations after the update.
+
+**New Users:**
+You should be fine using the default setup until 2028 (the EOL date for Node.js 24).
 
 ### Common Issues
 

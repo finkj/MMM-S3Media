@@ -174,6 +174,13 @@ Module.register("MMM-S3Photos", {
                     } else {
                         this.photos = payload;
                     }
+
+                    // Sort photos based on configuration
+                    if (this.config.displayOrder === "newest_first") {
+                        this.photos.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified));
+                    } else if (this.config.displayOrder === "oldest_first") {
+                        this.photos.sort((a, b) => new Date(a.lastModified) - new Date(b.lastModified));
+                    }
                     
                     this.errorMessage = null;
                     this.loaded = true;
@@ -216,49 +223,6 @@ Module.register("MMM-S3Photos", {
         }
     },
 
-    getNextPhoto: function() {
-        if (this.photos.length === 0) {
-            return null;
-        }
-
-        if (this.config.displayOrder === "newest_first") {
-            // Sort once and maintain index
-            if (!this.sortedPhotos) {
-                this.sortedPhotos = [...this.photos].sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified));
-                this.currentIndex = 0;
-            }
-            const photo = this.sortedPhotos[this.currentIndex];
-            this.currentIndex = (this.currentIndex + 1) % this.sortedPhotos.length;
-            return photo;
-
-        } else if (this.config.displayOrder === "oldest_first") {
-            // Sort once and maintain index
-            if (!this.sortedPhotos) {
-                this.sortedPhotos = [...this.photos].sort((a, b) => new Date(a.lastModified) - new Date(b.lastModified));
-                this.currentIndex = 0;
-            }
-            const photo = this.sortedPhotos[this.currentIndex];
-            this.currentIndex = (this.currentIndex + 1) % this.sortedPhotos.length;
-            return photo;
-
-        } else if (this.config.displayOrder === "random_dedupe") {
-            const remainingPhotos = this.photos.filter(photo => 
-                !Array.from(this.displayedPhotos).some(displayed => 
-                    displayed.url === photo.url
-                )
-            );
-            if (remainingPhotos.length === 0) {
-                this.displayedPhotos.clear();
-                return this.getNextPhoto();
-            }
-            const photo = remainingPhotos[Math.floor(Math.random() * remainingPhotos.length)];
-            this.displayedPhotos.add(photo);
-            return photo;
-
-        } else { // "random"
-            return this.photos[Math.floor(Math.random() * this.photos.length)];
-        }
-    },
 
     getAttributionText: function(photoUrl) {
         const parts = photoUrl.split('/');
@@ -430,8 +394,9 @@ Module.register("MMM-S3Photos", {
             newVideoElement.style.display = 'block';
             
             this.updateAttribution(video, wrapper);
+            this.imagesDisplayed++;
             
-            // If video is shorter than display duration and not looping, 
+            // If video is shorter than display duration and not looping,
             // schedule next media when video ends
             if (!this.config.video.loop) {
                 newVideoElement.addEventListener('ended', () => {
@@ -602,7 +567,7 @@ Module.register("MMM-S3Photos", {
                 nextIndex = (this.currentIndex + 1) % this.photos.length;
                 break;
             case "oldest_first":
-                nextIndex = this.currentIndex > 0 ? this.currentIndex - 1 : this.photos.length - 1;
+                nextIndex = (this.currentIndex + 1) % this.photos.length;
                 break;
             default:
                 nextIndex = (this.currentIndex + 1) % this.photos.length;

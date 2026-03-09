@@ -1,16 +1,26 @@
 {
   "name": "mmm-s3photos",
-  "version": "1.9.0",
-  "description": "MagicMirror module for displaying photos from AWS S3",
+  "version": "1.10.1",
+  "description": "MagicMirror² module for displaying photos and videos from AWS S3, featuring automated infrastructure setup (CDK), smart caching, and low-cost operation.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/uphillcheddar/MMM-S3Photos.git"
   },
   "homepage": "https://github.com/uphillcheddar/MMM-S3Photos#readme",
   "keywords": [
-    "MagicMirror",
+    "MagicMirror²",
     "S3",
-    "photos"
+    "AWS",
+    "photos",
+    "videos",
+    "photo",
+    "video",
+    "slideshow",
+    "background",
+    "wallpaper",
+    "Lambda",
+    "CDK",
+    "serverless"
   ],
   "main": "MMM-S3Photos.js",
   "scripts": {
