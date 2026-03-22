@@ -591,53 +591,50 @@ Module.register("MMM-S3Photos", {
     },
 
     updateAttribution: function(photo, wrapper) {
-        // Remove existing attributions
+        const transitionMs = (this.config.transitionDurationSeconds || 2) * 1000;
+
+        // Fade out and remove existing attributions
         const existingAttributions = wrapper.querySelectorAll('.attribution-container');
-        Array.from(existingAttributions).forEach(attribution => attribution.remove());
+        existingAttributions.forEach(el => {
+            el.classList.add('fade-out');
+            setTimeout(() => el.remove(), transitionMs);
+        });
 
-        // Add new attribution if enabled
-        if (this.config.attribution && this.config.attribution.enabled) {
-            const folder = photo.key.split('/')[0];
-            const text = this.config.attribution.attributions[folder];
-            
-            if (text) {
-                const attributionContainer = document.createElement("div");
-                attributionContainer.className = "attribution-container";
-                attributionContainer.setAttribute('data-relative', 
-                    this.config.attribution.relativeTo || 'display');
-                
-                const attribution = document.createElement("div");
-                attribution.className = "attribution";
-                attribution.textContent = text;
+        if (!this.config.attribution?.enabled) return;
 
-                if (this.config.attribution.position === "dynamic") {
-                    if (!this.currentCorner) {
-                        this.currentCorner = "top-left";
-                    } else {
-                        switch (this.currentCorner) {
-                            case "top-left":
-                                this.currentCorner = "top-right";
-                                break;
-                            case "top-right":
-                                this.currentCorner = "bottom-right";
-                                break;
-                            case "bottom-right":
-                                this.currentCorner = "bottom-left";
-                                break;
-                            case "bottom-left":
-                                this.currentCorner = "top-left";
-                                break;
-                        }
-                    }
-                    attributionContainer.classList.add(this.currentCorner);
-                } else {
-                    attributionContainer.classList.add(this.config.attribution.corner || "bottom-right");
-                }
+        const folder = photo.key.split('/')[0];
+        const text = this.config.attribution.attributions[folder];
+        if (!text) return;
 
-                attributionContainer.appendChild(attribution);
-                wrapper.appendChild(attributionContainer);
+        const attributionContainer = document.createElement("div");
+        attributionContainer.className = "attribution-container";
+        attributionContainer.style.opacity = "0"; // start hidden, fade in via rAF
+        attributionContainer.setAttribute('data-relative', this.config.attribution.relativeTo || 'display');
+
+        const attribution = document.createElement("div");
+        attribution.className = "attribution";
+        attribution.textContent = text;
+
+        if (this.config.attribution.position === "dynamic") {
+            if (!this.currentCorner) {
+                this.currentCorner = "top-left";
+            } else {
+                const corners = ["top-left", "top-right", "bottom-right", "bottom-left"];
+                const nextIdx = (corners.indexOf(this.currentCorner) + 1) % corners.length;
+                this.currentCorner = corners[nextIdx];
             }
+            attributionContainer.classList.add(this.currentCorner);
+        } else {
+            attributionContainer.classList.add(this.config.attribution.corner || "bottom-right");
         }
+
+        attributionContainer.appendChild(attribution);
+        wrapper.appendChild(attributionContainer);
+
+        // Trigger fade-in on next frame so the transition fires
+        requestAnimationFrame(() => {
+            attributionContainer.style.opacity = "";
+        });
     }
 
 });

@@ -199,6 +199,12 @@
     padding: 10px;
     border-radius: 36px;
     z-index: 2;
+    opacity: 1;
+    transition: opacity var(--transition-duration, 2s) ease-in-out;
+}
+
+.attribution-container.fade-out {
+    opacity: 0;
 }
 
 /* Display-relative positioning */
