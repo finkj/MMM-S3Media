@@ -175,7 +175,8 @@ Module.register("MMM-S3Photos", {
                         this.photos = payload;
                     }
 
-                    // Sort photos based on configuration
+                    // Reset dedupe tracking when photo list changes
+                    this.shownPhotos = new Set();
                     if (this.config.displayOrder === "newest_first") {
                         this.photos.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified));
                     } else if (this.config.displayOrder === "oldest_first") {
@@ -538,9 +539,9 @@ Module.register("MMM-S3Photos", {
                     console.log("Initializing shown media tracking");
                     this.shownPhotos = new Set();
                 }
-    
+
                 // Get array of available (unshown) indices
-                const availableIndices = Array.from(Array(this.photos.length).keys())
+                let availableIndices = Array.from(Array(this.photos.length).keys())
                     .filter(i => !this.shownPhotos.has(i));
                 
                 console.log("Available media:", availableIndices.length, "Total media:", this.photos.length);
@@ -549,13 +550,10 @@ Module.register("MMM-S3Photos", {
                 if (availableIndices.length === 0) {
                     console.log("All media shown, resetting tracking");
                     this.shownPhotos.clear();
-                    // Recalculate available indices
-                    nextIndex = Math.floor(Math.random() * this.photos.length);
-                } else {
-                    // Pick random media from available indices
-                    const randomAvailable = Math.floor(Math.random() * availableIndices.length);
-                    nextIndex = availableIndices[randomAvailable];
+                    availableIndices = Array.from(Array(this.photos.length).keys());
                 }
+
+                nextIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
                 
                 console.log("Selected new media index:", nextIndex);
                 this.shownPhotos.add(nextIndex);
